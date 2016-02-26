@@ -1,0 +1,7 @@
+<b>MQTT topic ID : </b>{{$ MQTT_MAINTOPIC }}<br>
+<b>Status : </b>{{$ gpio.read(GPIO_SWITCH) }}
+
+<br><br>
+<b>MAC Address : </b>{{$ wifi.sta.getmac() }}<br>
+<b>Chip ID : </b>{{$ node.chipid() }}<br>
+<b>Heap Size : </b>{{$ node.heap() }}<br>
