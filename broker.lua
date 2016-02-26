@@ -1,80 +1,45 @@
--- file : broker.lua
-
 local dispatcher = {}
-local switch_gpio = 6
-local light_gpio = 7
-
 
 -- client activation
 m = mqtt.Client(MQTT_CLIENTID, 60, "", "") -- no pass !
 
-
 -- actions
-local function set_current(m, pl)
-	print("action : activate ")
+local function switch_power(m, pl)
 	if pl == "on" then
-		gpio.write(switch_gpio, gpio.HIGH)
-		gpio.write(light_gpio, gpio.LOW)
-		print("plug on")
+		gpio.write(GPIO_SWITCH, gpio.HIGH)
+		gpio.write(GPIO_LED, gpio.LOW)
+		print("MQTT : plug ON for ", MQTT_CLIENTID)
 	else
-		gpio.write(switch_gpio, gpio.LOW)
-		gpio.write(light_gpio, gpio.HIGH)
-		print("plug off")
+		gpio.write(GPIO_SWITCH, gpio.LOW)
+		gpio.write(GPIO_LED, gpio.HIGH)
+		print("MQTT : plug OFF for ", MQTT_CLIENTID)
 	end
 end
 
-local function set_light(m, pl)
-	print("action : activate ")
-	if pl == "off" then
-		gpio.write(light_gpio, gpio.HIGH)
-		print("plug off")
-	else
-		gpio.write(light_gpio, gpio.LOW)
-		print("plug on")
-	end
-end
-
-
--- dispatching
-dispatcher[MQTT_MAINTOPIC .. '/set_current'] = set_current 
-dispatcher[MQTT_MAINTOPIC .. '/set_light'] = set_light
-
-
--- event : last will
+-- events
 m:lwt('/lwt', MQTT_CLIENTID .. " died !", 0, 0)
 
--- event : connect
 m:on('connect', function(m)
-	print('\n*************************', MQTT_CLIENTID, " connected to : ", MQTT_HOST, " on port : ", MQTT_PORT, '\n*************************\n')
+	print('MQTT : ' .. MQTT_CLIENTID .. " connected to : " .. MQTT_HOST .. " on port : " .. MQTT_PORT)
 	m:subscribe(MQTT_MAINTOPIC .. '/#', 0, function (m)
-		print('Subscribed to : ', MQTT_MAINTOPIC) 
+		print('MQTT : subscribed to ', MQTT_MAINTOPIC) 
 	end)
 end)
 
-
--- event : disconnect
 m:on('offline', function(m)
-	print('Disconnected from : ', MQTT_HOST)
-	print('Heap : ', node.heap())
+	print('MQTT : disconnected from ', MQTT_HOST)
 end)
 
--- event : receive msg
 m:on('message', function(m, topic, pl)
-	print('	payload : ', pl)
-	print('	topic : ', topic)
-
+	print('MQTT : Topic ', topic, ' with payload ', pl)
 	if pl~=nil and dispatcher[topic] then
 		dispatcher[topic](m, pl)
 	end
 end)
 
 
-
 -- Start
--- connect gpios
-gpio.mode(switch_gpio, gpio.OUTPUT)
-gpio.mode(light_gpio, gpio.OUTPUT)
--- connect mqtt
+gpio.mode(GPIO_SWITCH, gpio.OUTPUT)
+gpio.mode(GPIO_LED, gpio.OUTPUT)
+dispatcher[MQTT_MAINTOPIC .. '/power'] = switch_power
 m:connect(MQTT_HOST, MQTT_PORT, 0, 1)
--- loop
-
