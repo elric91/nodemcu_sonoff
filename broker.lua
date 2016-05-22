@@ -7,14 +7,13 @@ m = mqtt.Client(MQTT_CLIENTID, 60, "", "") -- no pass !
 local function switch_power(m, pl)
 	if pl == "on" then
 		gpio.write(GPIO_SWITCH, gpio.HIGH)
-		gpio.write(GPIO_LED, gpio.LOW)
 		print("MQTT : plug ON for ", MQTT_CLIENTID)
 	else
 		gpio.write(GPIO_SWITCH, gpio.LOW)
-		gpio.write(GPIO_LED, gpio.HIGH)
 		print("MQTT : plug OFF for ", MQTT_CLIENTID)
 	end
 end
+
 
 -- events
 m:lwt('/lwt', MQTT_CLIENTID .. " died !", 0, 0)
@@ -40,6 +39,5 @@ end)
 
 -- Start
 gpio.mode(GPIO_SWITCH, gpio.OUTPUT)
-gpio.mode(GPIO_LED, gpio.OUTPUT)
 dispatcher[MQTT_MAINTOPIC .. '/power'] = switch_power
 m:connect(MQTT_HOST, MQTT_PORT, 0, 1)
