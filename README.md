@@ -4,7 +4,7 @@ Some nodemcu based code to run sonoff wifi enabled plugs through MQTT
 
 
 
-* **config.lua :** as it name implies
+* **config.lua :** as its name implies
 * **init.lua :** runs the wifi connection and launches ota and broker modules
 * **ota.lua :** web server (http) and over the air updates module
 ```
