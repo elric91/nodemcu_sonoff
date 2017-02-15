@@ -1,6 +1,6 @@
 # nodemcu_sonoff
 Some nodemcu based code to run sonoff wifi enabled plugs through MQTT
-
+The button on the device can also be used to toggle the state of the plug
 
 
 
