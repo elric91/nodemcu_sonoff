@@ -1,6 +1,7 @@
 -- GPIOS
 GPIO_LED = 7
 GPIO_SWITCH = 6
+GPIO_BUTTON = 3
 
 -- WiFi
 WIFI_SSID = "YOUR_SSID"
@@ -15,6 +16,8 @@ MQTT_CLIENTID = "plugxxx"
 MQTT_HOST = "YOUR_HOST"
 MQTT_PORT = 1883
 MQTT_MAINTOPIC = "YOUT MQTT_TOPIC" .. MQTT_CLIENTID
+MQTT_USERNAME = ""
+MQTT_PASSWORD = ""
 
 -- Confirmation message
 print("\nGlobal variables loaded...\n")

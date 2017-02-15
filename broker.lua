@@ -1,7 +1,7 @@
 local dispatcher = {}
 
 -- client activation
-m = mqtt.Client(MQTT_CLIENTID, 60, "", "") -- no pass !
+m = mqtt.Client(MQTT_CLIENTID, 60, MQTT_USERNAME, MQTT_PASSWORD) 
 
 -- actions
 local function switch_power(m, pl)
@@ -14,6 +14,16 @@ local function switch_power(m, pl)
 	end
 end
 
+local function toggle_power()
+	if gpio.read(GPIO_SWITCH) == gpio.HIGH then
+		gpio.write(GPIO_SWITCH, gpio.LOW)
+		m:publish(MQTT_MAINTOPIC .. '/power', "off", 0, 1)
+	else
+		gpio.write(GPIO_SWITCH, gpio.HIGH)
+		m:publish(MQTT_MAINTOPIC .. '/power', "on", 0, 1)
+  end
+	tmr.delay(500) -- debounce
+end
 
 -- events
 m:lwt('/lwt', MQTT_CLIENTID .. " died !", 0, 0)
@@ -39,5 +49,7 @@ end)
 
 -- Start
 gpio.mode(GPIO_SWITCH, gpio.OUTPUT)
+gpio.mode(GPIO_BUTTON, gpio.INT)
+gpio.trig(GPIO_BUTTON, 'down', toggle_power)
 dispatcher[MQTT_MAINTOPIC .. '/power'] = switch_power
 m:connect(MQTT_HOST, MQTT_PORT, 0, 1)
