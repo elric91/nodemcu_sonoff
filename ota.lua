@@ -35,6 +35,10 @@ local pl = nil;
 local sv=net.createServer(net.TCP, 10) 
 
 sv:listen(80,function(conn)
+  conn:on("sent", function(conn, pl)
+    conn:close()
+    collectgarbage()
+  end)
   conn:on("receive", function(conn, pl) 
     local payload = pl;
     if string.sub(pl, 0, 9) == "**LOAD**\n"  then
@@ -51,8 +55,6 @@ sv:listen(80,function(conn)
       print("HTTP : default page")
       conn:send(exec_template("page.tmpl"))
     end
-    conn:close()
-    collectgarbage()
   end)
 end)
 print("Server running...")
