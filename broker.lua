@@ -1,7 +1,11 @@
 local dispatcher = {}
 
 -- client activation
-m = mqtt.Client(MQTT_CLIENTID, 60, MQTT_USERNAME, MQTT_PASSWORD) 
+if m == nil then
+    m = mqtt.Client(MQTT_CLIENTID, 60, MQTT_USERNAME, MQTT_PASSWORD) 
+else
+    m:close()
+end
 
 -- debounce
 function debounce(func)
