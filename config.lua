@@ -3,9 +3,11 @@ GPIO_LED = 7
 GPIO_SWITCH = 6
 GPIO_BUTTON = 3
 
--- WiFi
-WIFI_SSID = "YOUR_SSID"
-WIFI_PASS = "YOUR PASSWORD"
+-- WiFi networks list in format [SSID] = password
+WIFI_AUTH = {
+["YOUR_SSID_1"] = "YOUR PASSWORD 1",
+["YOUR_SSID_2"] = "YOUR PASSWORD 2"
+}
 
 -- Alarms
 WIFI_ALARM_ID = 0
