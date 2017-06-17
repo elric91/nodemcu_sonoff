@@ -32,7 +32,11 @@ end
 
 
 local pl = nil;
-local sv=net.createServer(net.TCP, 10) 
+
+if sv ~= nil then
+    sv:close()
+end
+sv = net.createServer(net.TCP, 10)
 
 sv:listen(80,function(conn)
   conn:on("sent", function(conn, pl)
