@@ -61,7 +61,9 @@ function wifi_watch()
     if status == wifi.STA_GOTIP and wifiReady == 0 then
         wifiReady = 1
         print("WiFi: connected with " .. wifi.sta.getip())
-        load_lib("telnet")
+        if TELNET == 1 then
+            load_lib("telnet")
+        end
         load_lib("broker")
     elseif status == wifi.STA_GOTIP and wifiReady == 1 then
         if firstPass == 0 then

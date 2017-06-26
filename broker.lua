@@ -10,11 +10,10 @@ end
 -- debounce
 function debounce(func)
     local last = 0
-    local delay = 500000
 
     return function (...)
         local now = tmr.now()
-        if now - last < delay then return end
+        if now - last < BUTTON_DEBOUNCE then return end
 
         last = now
         return func(...)
