@@ -19,4 +19,5 @@ mosquitto_pub -h "myMQTTserver" -t "/myMQTTpath/power" -m "off" -- turn plug off
 
 > Sonoff pin layout and GPIOs stolen from [Pete and the community](http://tech.scargill.net/itead-slampher-and-sonoff/)  
 > Wifi connection loop stolen from [marcelstoer/wifi-watch.lua](https://gist.github.com/marcelstoer/63ce6e6d78cef435d2ec)  
-> nodemcu firmware generated with [Marcel's NodeMCU custom build machine](http://nodemcu-build.com/) (just add MQTT to the standard module selection)
+> nodemcu firmware generated with [Marcel's NodeMCU custom build machine](http://nodemcu-build.com/) (just add MQTT to the standard module selection)  
+> Correction of shameful bugs and multi-wifi enabled by [jesstr](https://github.com/jesstr), thank you !
