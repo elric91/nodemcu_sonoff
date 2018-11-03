@@ -24,8 +24,9 @@ echo "**RESTART**" | socat -u stdin TCP:ipaddress:80 -- restart esp8266
 ```
 * **mqtt.lua :** mqtt client module
 ```
-mosquitto_pub -h "myMQTTserver" -t "/myMQTTpath/power" -m "on" -- turn plug on
-mosquitto_pub -h "myMQTTserver" -t "/myMQTTpath/power" -m "off" -- turn plug off
+mosquitto_pub -h "myMQTTserver" -t "/myMQTTpath/myClientID/cmd/power" -m "on" -- turn plug on
+mosquitto_pub -h "myMQTTserver" -t "/myMQTTpath/myClientID/cmd/power" -m "off" -- turn plug off
+mosquitto_pub -h "myMQTTserver" -t "/myMQTTpath/myClientID/cmd/status" -m "" -- immediately returns status in /myMQTTpath/myClientID/state/#
 ```
 
 > Sonoff pin layout and GPIOs stolen from [Pete and the community](http://tech.scargill.net/itead-slampher-and-sonoff/)  
