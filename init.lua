@@ -1,11 +1,24 @@
--- init all globals
+-- safe library load
 function load_lib(fname)
-    if file.open(fname .. ".lc") then
-        file.close()
-        dofile(fname .. ".lc")
-    else
-        dofile(fname .. ".lua")
+    function try_load(fname)
+        if file.open(fname) then
+            file.close()
+            local ret, err = pcall(function() dofile(fname) end)
+            if ret == false then
+                print(fname .. " -- load failed!")
+                print(err)
+            end
+            return ret
+        else
+            return false
+        end
     end
+
+    if try_load(fname..".lc") then return true end
+    if try_load(fname..".lua") then return true end
+    
+    print(fname .. ".lua/.lc -- not found!")
+    return false
 end
 
 -- get table length
@@ -18,11 +31,10 @@ function tablelen(table)
 end
 
 load_lib("config")
-
+load_lib("led")
 local ssid, pass = nil
 local wifiReady = 0
 local firstPass = 0
-local ledOn = false
 
 -- connect to WIFI network(s) from SSID list
 function connectWiFi(ssid_list)
@@ -34,16 +46,21 @@ function connectWiFi(ssid_list)
     end
     if ssid ~= nil then
         print("Connecting to "..ssid)
-        wifi.sta.config(ssid, pass)
+        -- New wifi module API used since nodemcu fw pull request #1497
+        station_cfg={}
+        station_cfg.ssid = ssid
+        station_cfg.pwd = pass
+        wifi.sta.config(station_cfg)
         tmr.alarm(WIFI_ALARM_ID, 2000, tmr.ALARM_AUTO, wifi_watch)
     else
         print("SSID not found")
+        LedFlicker(50, 100, 5)
     end
 end
 
 -- configure WIFI network
 function configureWiFi()
-    gpio.mode(GPIO_LED, gpio.OUTPUT)
+    LedFlicker(50, 500, 10)
     wifi.setmode(wifi.STATION)
     if tablelen(WIFI_AUTH) > 1 then
         -- scan available networks
@@ -61,42 +78,26 @@ function wifi_watch()
     if status == wifi.STA_GOTIP and wifiReady == 0 then
         wifiReady = 1
         print("WiFi: connected with " .. wifi.sta.getip())
-        if TELNET_MODULE == 1 then
-            load_lib("telnet")
-        end
-        load_lib("broker")
-    elseif status == wifi.STA_GOTIP and wifiReady == 1 then
+        LedBlink(400)
+
+        --run modules on first start only
         if firstPass == 0 then
-            load_lib("ota")
+            if TELNET_MODULE == 1 then
+                load_lib("telnet")
+            end
+            if HTTP_MODULE == 1 then
+                load_lib("http")
+            end
+            load_lib("mqtt")
             firstPass = 1
-            tmr.stop(WIFI_LED_BLINK_ALARM_ID)
-            turnWiFiLedOn()
         end
+    elseif status == wifi.STA_GOTIP and wifiReady == 1 then
+        --pass
     else
         wifiReady = 0
-        turnWiFiLedOnOff()
+        LedFlicker(50, 500, 10)
         print("WiFi: (re-)connecting")
     end
-end
-
-function turnWiFiLedOnOff()
-    tmr.alarm(WIFI_LED_BLINK_ALARM_ID, 200, tmr.ALARM_SINGLE, function()
-        if ledOn then
-            turnWiFiLedOff()
-        else
-            turnWiFiLedOn()
-        end
-    end)
-end
-
-function turnWiFiLedOn()
-    gpio.write(GPIO_LED, gpio.LOW)
-    ledOn = true
-end
-
-function turnWiFiLedOff()
-    gpio.write(GPIO_LED, gpio.HIGH)
-    ledOn = false
 end
 
 -- Configure
