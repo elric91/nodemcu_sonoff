@@ -3,7 +3,7 @@ Some nodemcu based code to run sonoff wifi enabled plugs through MQTT
 The button on the device can also be used to toggle the state of the plug
 
 Main difference with jesstr (https://github.com/jesstr/nodemcu_sonoff) fork :
-- on this one : power status and command are available in the same topic /cmd/power (useful when multiple remotes should stay in sync)
+- on this one : power status and command are available in the same topic /cmd/power (useful when multiple remotes should stay in sync). One more command : "/cmd/status" which returns the state on top of jesstr's timed version 
 - on jesstr's one : command is on /cmd/power and status on /state/power
 
 
