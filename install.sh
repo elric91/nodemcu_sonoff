@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-echp `pwd`
+echo `pwd`
 
 LUATOOL=./luatool.py
 ESPTOOL=esptool.py
